@@ -1,7 +1,7 @@
 package main
 
 import (
-	"tickspot"
+	tickspot "github.com/nicored/gotickyourself"
 
 	"fmt"
 

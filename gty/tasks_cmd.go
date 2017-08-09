@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"tickspot"
+	tickspot "github.com/nicored/gotickyourself"
 
 	"strconv"
 
