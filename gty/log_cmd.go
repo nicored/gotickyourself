@@ -54,10 +54,14 @@ func runLogCmd(cmd *cobra.Command, args []string) {
 		period = strings.Join(args[0:1], " ")
 		nArgs += 2
 	} else if len(args) > 0 {
-		if hours, isHours := getHours(args[0]); isHours {
+		hours, isHours := getHours(args[0])
+		if isHours && hours > 0 {
 			logHours = hours
 			nArgs += 1
 			logType = logSpecificHours
+		} else if hours == 0 {
+			log.Println("Error: Hours must be between 0 and 24")
+			os.Exit(1)
 		}
 	}
 
@@ -88,8 +92,11 @@ func runLogCmd(cmd *cobra.Command, args []string) {
 			}
 		}
 
-		_, err = tick.CreateEntry(date, logHours, cmd.Flag("notes").Value.String(), task, true)
+		entry, err := tick.CreateEntry(date, logHours, cmd.Flag("notes").Value.String(), task, true)
 		errfOnMismatch(err, nil, "An error occurred when creating the entry. %s\n", err)
+
+		fmt.Printf("Logged successfully\n\n")
+		entry.Print(tick)
 
 		os.Exit(0)
 	}
