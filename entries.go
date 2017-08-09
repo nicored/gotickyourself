@@ -215,7 +215,7 @@ func (e Entry) Print(t *Tick) {
 // SortEntriesBy is the type of a "less" function that defines the ordering of its Entries arguments.
 type SortEntriesBy func(e1, e2 *Entry) bool
 
-// planetSorter joins a SortEntriesBy function and a slice of Entries to be sorted.
+// entrySorter joins a SortEntriesBy function and a slice of Entries to be sorted.
 type entrySorter struct {
 	entries []*Entry
 	by      func(p1, p2 *Entry) bool // Closure used in the Less method.
