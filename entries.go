@@ -191,11 +191,11 @@ func (e Entry) Print(t *Tick) {
 	task := t.Tasks[e.TaskId]
 	if task == nil {
 		fmt.Print("-> Task: Unknown")
-		fmt.Printf("\t-> Time (hours): %f\n", e.Hours)
+		fmt.Printf("\t-> Time (hours): %.2f\n", e.Hours)
 		return
 	}
 	fmt.Printf("-> Task: %s\n", task.Name)
-	fmt.Printf("\t-> Time (hours): %f\n", e.Hours)
+	fmt.Printf("\t-> Time (hours): %.2f\n", e.Hours)
 
 	project := t.Projects[task.ProjectId]
 	if project == nil {

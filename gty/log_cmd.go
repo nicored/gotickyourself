@@ -47,6 +47,11 @@ func runLogCmd(cmd *cobra.Command, args []string) {
 	nArgs := 0
 	period := ""
 
+	expectedHours := getHoursPerDay()
+	todayHours := make(chan float64)
+	todayEntriesErr := make(chan error)
+	dateArg := cmd.Flag("date").Value.String()
+
 	if len(args) >= 1 && isSimplePeriod(args[0]) {
 		period = args[0]
 		nArgs += 1
@@ -78,26 +83,44 @@ func runLogCmd(cmd *cobra.Command, args []string) {
 
 	if logType == logSpecificHours || period == "" {
 		var err error
-		date := cmd.Flag("date").Value.String()
-		date, err = parseDate(date)
 
+		date, err := parseDate(dateArg)
 		if logHours < 0 {
 			entries, err := tick.GetEntries(tickspot.DateRange{date, date})
 			errfOnMismatch(err, nil, "Could not load entries")
 			dayHours := getTotalEntriesHours(entries)
 
-			expectedHours := getHoursPerDay()
 			if dayHours < expectedHours {
 				logHours = expectedHours - dayHours
 			}
 		}
 
+		go func() {
+			todayEntries, err := tick.GetEntries(tickspot.DateRange{date, date})
+			if err != nil {
+				todayEntriesErr <- err
+			}
+			todayHours <- getTotalEntriesHours(todayEntries)
+		}()
+
 		entry, err := tick.CreateEntry(date, logHours, cmd.Flag("notes").Value.String(), task, true)
 		errfOnMismatch(err, nil, "An error occurred when creating the entry. %s\n", err)
+		fmt.Printf("Logged successfully\n")
 
-		fmt.Printf("Logged successfully\n\n")
+		select {
+		case err = <-todayEntriesErr:
+			return
+		case totalHours := <-todayHours:
+			totalHours += logHours
+
+			fmt.Printf("You've logged a total of %.2f hours for %s ", totalHours, dateArg)
+			if totalHours < expectedHours {
+				fmt.Printf("(%.2f remaining)", expectedHours-totalHours)
+			}
+		}
+
+		fmt.Println("\n\n==== New Entry ====")
 		entry.Print(tick)
-
 		os.Exit(0)
 	}
 }
