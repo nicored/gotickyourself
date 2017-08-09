@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func getProjectsCmd(tick *tickspot.Tick) *cobra.Command {
+func getProjectsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:    "projects",
 		Short:  "Resets all settings",

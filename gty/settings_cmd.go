@@ -1,12 +1,10 @@
 package main
 
 import (
-	tickspot "github.com/nicored/gotickyourself"
-
 	"github.com/spf13/cobra"
 )
 
-func getSettingsCmd(tick *tickspot.Tick) *cobra.Command {
+func getSettingsCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:    "settings",
 		Short:  "Shows all settings",

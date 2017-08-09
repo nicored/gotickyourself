@@ -21,6 +21,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var version = "0.1.0-dev"
+
 const (
 	gtyDir              = ".gty"
 	cnfRolesName        = "roles"
@@ -44,6 +46,7 @@ var (
 	settingsConfig *Settings
 
 	reservedNames = []string{"today", "yesterday", "week", "fortnight", "month"}
+	aliases       map[string]*tickspot.Task
 )
 
 type Updatable interface {
@@ -71,10 +74,6 @@ type Projects struct {
 	DefaultTask *tickspot.Task            `yaml:"-"`
 }
 
-var (
-	Alias map[string]*tickspot.Task
-)
-
 func init() {
 	homeDir = getHome()
 	configPath = checkConfigDir(homeDir)
@@ -87,16 +86,17 @@ func main() {
 
 	rootCmd := &cobra.Command{Use: "gty"}
 
-	rootCmd.AddCommand(getInitCmd(tick))
-	rootCmd.AddCommand(getSettingsCmd(tick))
-	rootCmd.AddCommand(getResetCmd(tick))
-	rootCmd.AddCommand(getRolesCmd(tick))
-	rootCmd.AddCommand(getUpdateCmd(tick))
-	rootCmd.AddCommand(getProjectsCmd(tick))
-	rootCmd.AddCommand(getLogCmd(tick))
-	rootCmd.AddCommand(getListCmd(tick))
-	rootCmd.AddCommand(getSumCmd(tick))
-	rootCmd.AddCommand(getTasksCmd(tick))
+	rootCmd.AddCommand(getInitCmd())
+	rootCmd.AddCommand(getSettingsCmd())
+	rootCmd.AddCommand(getResetCmd())
+	rootCmd.AddCommand(getRolesCmd())
+	rootCmd.AddCommand(getUpdateCmd())
+	rootCmd.AddCommand(getProjectsCmd())
+	rootCmd.AddCommand(getLogCmd())
+	rootCmd.AddCommand(getListCmd())
+	rootCmd.AddCommand(getSumCmd())
+	rootCmd.AddCommand(getTasksCmd())
+	rootCmd.AddCommand(getVersionCmd())
 
 	rootCmd.Execute()
 }
@@ -108,6 +108,17 @@ func initConfigFiles(cmd *cobra.Command, args []string) {
 
 	tick.Projects = projectsConfig.Projects
 	tick.Clients = projectsConfig.Clients
+}
+
+func getVersionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "version",
+		Short: "Get gty version",
+		Long:  ``,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("GoTickYourself Version %s\n", version)
+		},
+	}
 }
 
 func loadSettings() string {
@@ -270,7 +281,7 @@ func updateConfigFile(cnfPath string, target Updatable) {
 }
 
 func indexTasks(projects map[int]*tickspot.Project) {
-	Alias = map[string]*tickspot.Task{}
+	aliases = map[string]*tickspot.Task{}
 	tick.Tasks = map[int]*tickspot.Task{}
 
 	for _, p := range projects {
@@ -279,7 +290,7 @@ func indexTasks(projects map[int]*tickspot.Project) {
 
 			alias := strings.ToLower(strings.TrimSpace(t.Alias))
 			if alias != "" {
-				Alias[alias] = t
+				aliases[alias] = t
 			}
 		}
 	}

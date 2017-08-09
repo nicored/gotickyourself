@@ -1,14 +1,12 @@
 package main
 
 import (
-	tickspot "github.com/nicored/gotickyourself"
-
 	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-func getListCmd(tick *tickspot.Tick) *cobra.Command {
+func getListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:    "ls",
 		Short:  "List logs",

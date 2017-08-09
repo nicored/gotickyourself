@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-func getInitCmd(tick *tickspot.Tick) *cobra.Command {
+func getInitCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "init",
 		Short: "Initialises gty.",

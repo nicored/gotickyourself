@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func getSumCmd(tick *tickspot.Tick) *cobra.Command {
+func getSumCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:    "sum",
 		Short:  "Log summary",

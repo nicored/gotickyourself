@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func getLogCmd(tick *tickspot.Tick) *cobra.Command {
+func getLogCmd() *cobra.Command {
 	logCmd := &cobra.Command{
 		Use:    "log",
 		Short:  "log new entries",
@@ -71,8 +71,8 @@ func runLogCmd(cmd *cobra.Command, args []string) {
 	}
 
 	if len(args) > nArgs {
-		t, ok := Alias[args[nArgs]]
-		errfOnMismatch(ok, true, "Alias %s does not exist\n", args[nArgs])
+		t, ok := aliases[args[nArgs]]
+		errfOnMismatch(ok, true, "aliases %s does not exist\n", args[nArgs])
 		task = t
 	}
 

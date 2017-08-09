@@ -1,12 +1,10 @@
 package main
 
 import (
-	tickspot "github.com/nicored/gotickyourself"
-
 	"github.com/spf13/cobra"
 )
 
-func getRolesCmd(tick *tickspot.Tick) *cobra.Command {
+func getRolesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:    "roles",
 		Short:  "Resets all settings",

@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func getTasksCmd(tick *tickspot.Tick) *cobra.Command {
+func getTasksCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:    "tasks",
 		Short:  "List tasks",
@@ -105,7 +105,7 @@ func runTasksCmd(cmd *cobra.Command, args []string) {
 
 func aliasCmd(cmd *cobra.Command, args []string) {
 	tasks := []*tickspot.Task{}
-	for _, t := range Alias {
+	for _, t := range aliases {
 		tasks = append(tasks, t)
 	}
 
@@ -130,7 +130,7 @@ func removeAliasCmd(cmd *cobra.Command, args []string) {
 }
 
 func removeAllAliases(force bool) {
-	if len(Alias) == 0 {
+	if len(aliases) == 0 {
 		log.Println("No alias to remove")
 		os.Exit(0)
 	}
@@ -141,7 +141,7 @@ func removeAllAliases(force bool) {
 		os.Exit(1)
 	}
 
-	for _, t := range Alias {
+	for _, t := range aliases {
 		t.Alias = ""
 	}
 
@@ -247,12 +247,12 @@ func isValidAlias(alias string) (bool, error) {
 	alias = strings.ToLower(strings.TrimSpace(alias))
 
 	if alias == "" {
-		return false, errors.New("Alias cannot be empty")
+		return false, errors.New("aliases cannot be empty")
 	}
 
 	for _, reserved := range reservedNames {
 		if alias == reserved {
-			return false, fmt.Errorf("Alias cannot not be any of the following reserved words: %s", strings.Join(reservedNames, ", "))
+			return false, fmt.Errorf("aliases cannot not be any of the following reserved words: %s", strings.Join(reservedNames, ", "))
 		}
 	}
 
