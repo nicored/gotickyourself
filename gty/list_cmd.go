@@ -24,7 +24,7 @@ func runListCmd(cmd *cobra.Command, args []string) {
 		argsStr = "today"
 	}
 
-	entries, err := tick.GetEntries(getDateRange("2017-06-01"))
+	entries, err := tick.GetEntries(getDateRange(argsStr))
 	errfOnMismatch(err, nil, "Could not get entries. %s", err)
 
 	tick.PrintEntries(entries)
