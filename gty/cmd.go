@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"tickspot"
+	tickspot "github.com/nicored/gotickyourself"
 
 	"path/filepath"
 
