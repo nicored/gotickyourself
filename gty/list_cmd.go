@@ -1,9 +1,7 @@
 package main
 
 import (
-	tickspot "github.com/nicored/gotickyourself"
-
-	"fmt"
+	"tickspot"
 
 	"strings"
 
@@ -26,18 +24,8 @@ func runListCmd(cmd *cobra.Command, args []string) {
 		argsStr = "today"
 	}
 
-	entries, err := tick.GetEntries(getDateRange(argsStr))
+	entries, err := tick.GetEntries(getDateRange("2017-06-01"))
 	errfOnMismatch(err, nil, "Could not get entries. %s", err)
 
-	for _, entry := range entries {
-		projectName := "Unknown"
-		taskName := "Unknown"
-
-		if t, ok := Tasks[entry.TaskId]; ok {
-			projectName = projectsConfig.Projects[t.ProjectId].Name
-			taskName = t.Name
-		}
-
-		fmt.Println(entry.Date, entry.Hours, projectName, taskName, entry.TaskId)
-	}
+	tick.PrintEntries(entries)
 }

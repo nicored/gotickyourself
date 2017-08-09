@@ -10,6 +10,8 @@ import (
 	"net/http"
 
 	"github.com/snabb/isoweek"
+	"regexp"
+	"sort"
 )
 
 type Pathable interface {
@@ -158,4 +160,88 @@ func (t *Tick) GetWeeklyTimeSummary() (float64, error) {
 	}
 
 	return total, nil
+}
+
+func (t *Tick) PrintEntries(entries []*Entry) {
+	// Sort entries by date
+	byDate := func(e1, e2 *Entry) bool {
+		return e1.Date < e2.Date
+	}
+	SortEntriesBy(byDate).Sort(entries)
+
+	dreg := regexp.MustCompile("^\\d{4}-\\d{1,2}-\\d{1,2}")
+	currentDate := ""
+
+	for ie, e := range entries {
+		eDate := dreg.FindString(e.Date)
+		if currentDate != eDate {
+			if ie > 0 {
+				fmt.Println()
+			}
+
+			fmt.Printf("==== Entries for %s ====\n", e.Date)
+			currentDate = eDate
+		}
+
+		e.Print(t)
+	}
+}
+
+func (e Entry) Print(t *Tick) {
+	task := t.Tasks[e.TaskId]
+	if task == nil {
+		fmt.Print("-> Task: Unknown")
+		fmt.Printf("\t-> Time (hours): %f\n", e.Hours)
+		return
+	}
+	fmt.Printf("-> Task: %s\n", task.Name)
+	fmt.Printf("\t-> Time (hours): %f\n", e.Hours)
+
+	project := t.Projects[task.ProjectId]
+	if project == nil {
+		fmt.Print("\t-> Project: Unknown")
+		return
+	}
+	fmt.Printf("\t-> Project: %s\n", project.Name)
+
+	client := t.Clients[project.ClientId]
+	if client == nil {
+		fmt.Print("\t-> Client: Unknown")
+		return
+	}
+	fmt.Printf("\t-> Client: %s\n", client.Name)
+}
+
+// SortEntriesBy is the type of a "less" function that defines the ordering of its Entries arguments.
+type SortEntriesBy func(e1, e2 *Entry) bool
+
+// planetSorter joins a SortEntriesBy function and a slice of Entries to be sorted.
+type entrySorter struct {
+	entries []*Entry
+	by      func(p1, p2 *Entry) bool // Closure used in the Less method.
+}
+
+// Sort is a method on the function type, SortEntriesBy, that sorts the argument slice according to the function.
+func (by SortEntriesBy) Sort(entries []*Entry) {
+	es := &entrySorter{
+		entries: entries,
+		by:      by, // The Sort method'e receiver is the function (closure) that defines the sort order.
+	}
+
+	sort.Sort(es)
+}
+
+// Len is part of sort.Interface.
+func (e *entrySorter) Len() int {
+	return len(e.entries)
+}
+
+// Swap is part of sort.Interface.
+func (e *entrySorter) Swap(i, j int) {
+	e.entries[i], e.entries[j] = e.entries[j], e.entries[i]
+}
+
+// Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
+func (e *entrySorter) Less(i, j int) bool {
+	return e.by(e.entries[i], e.entries[j])
 }

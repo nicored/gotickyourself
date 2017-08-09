@@ -1,7 +1,7 @@
 package main
 
 import (
-	tickspot "github.com/nicored/gotickyourself"
+	"tickspot"
 
 	"github.com/spf13/cobra"
 )

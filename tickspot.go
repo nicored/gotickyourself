@@ -20,10 +20,13 @@ type TickClient struct {
 }
 
 type Tick struct {
-	Role    *Role
-	User    *User
-	Client  *TickClient
-	BaseUrl string
+	Role     *Role
+	User     *User
+	Client   *TickClient
+	BaseUrl  string
+	Tasks    map[int]*Task
+	Projects map[int]*Project
+	Clients  map[int]*Client
 }
 
 type Response struct {

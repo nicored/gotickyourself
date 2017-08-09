@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	tickspot "github.com/nicored/gotickyourself"
+	"tickspot"
 
 	"path/filepath"
 
@@ -28,7 +28,6 @@ const (
 	cnfSettingsName     = "settings"
 	baseUrl             = "https://www.tickspot.com"
 	updateProjectsAfter = 2 * 24 * time.Hour
-	//updateProjectsAfter = 5 * time.Minute
 )
 
 var (
@@ -36,7 +35,6 @@ var (
 	configPath   string
 	rolesPath    string
 	projectsPath string
-	settingsPath string
 )
 
 var (
@@ -74,13 +72,10 @@ type Projects struct {
 }
 
 var (
-	Tasks map[int]*tickspot.Task
 	Alias map[string]*tickspot.Task
 )
 
 func init() {
-	Tasks = map[int]*tickspot.Task{}
-
 	homeDir = getHome()
 	configPath = checkConfigDir(homeDir)
 }
@@ -107,9 +102,12 @@ func main() {
 }
 
 func initConfigFiles(cmd *cobra.Command, args []string) {
-	settingsPath = loadSettings()
+	loadSettings()
 	rolesPath = loadRoleConfig()
 	projectsPath = loadProjects()
+
+	tick.Projects = projectsConfig.Projects
+	tick.Clients = projectsConfig.Clients
 }
 
 func loadSettings() string {
@@ -132,32 +130,6 @@ func loadSettings() string {
 
 	return settingsFile
 }
-
-//func loadCreds() string {
-//	credsConfig = &Credentials{}
-//
-//	credsFile := filepath.Join(configPath, cnfCredsName+".yml")
-//	exists := checkConfigFile(credsFile, credsConfig)
-//	if !exists {
-//		return credsFile
-//	}
-//
-//	fc, err := ioutil.ReadFile(credsFile)
-//	errOnMismatch(err, nil, "Could not read file")
-//
-//	err = yaml.Unmarshal(fc, credsConfig)
-//	errfOnMismatch(err, nil, "Could not read config file for %s. %s", credsFile, err)
-//
-//	tick.Client = &tickspot.TickClient{
-//		Username: credsConfig.Username,
-//		Password: credsConfig.Password,
-//	}
-//
-//	//initialised := tick.Client.Username != "" && tick.Client.Password != ""
-//	//errfOnMismatch(initialised, true, "You must initialise gty by running the init command")
-//
-//	return credsFile
-//}
 
 func loadRoleConfig() string {
 	rolesConfig = &Roles{
@@ -299,11 +271,11 @@ func updateConfigFile(cnfPath string, target Updatable) {
 
 func indexTasks(projects map[int]*tickspot.Project) {
 	Alias = map[string]*tickspot.Task{}
-	Tasks = map[int]*tickspot.Task{}
+	tick.Tasks = map[int]*tickspot.Task{}
 
 	for _, p := range projects {
 		for tID, t := range p.Tasks {
-			Tasks[tID] = t
+			tick.Tasks[tID] = t
 
 			alias := strings.ToLower(strings.TrimSpace(t.Alias))
 			if alias != "" {

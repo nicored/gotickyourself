@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	tickspot "github.com/nicored/gotickyourself"
+	"tickspot"
 
 	"fmt"
 

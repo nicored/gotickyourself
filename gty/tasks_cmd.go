@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	tickspot "github.com/nicored/gotickyourself"
+	"tickspot"
 
 	"strconv"
 
@@ -122,7 +122,7 @@ func removeAliasCmd(cmd *cobra.Command, args []string) {
 	taskID, err := strconv.Atoi(args[0])
 	errfOnMismatch(err, nil, "%s is not a valid task ID\n", args[0])
 
-	task, ok := Tasks[taskID]
+	task, ok := tick.Tasks[taskID]
 	errfOnMismatch(ok, true, "Task with ID %d does not exist\n", taskID)
 
 	task.Alias = ""
@@ -158,7 +158,7 @@ func addAliasCmd(cmd *cobra.Command, args []string) {
 	taskID, err := strconv.Atoi(args[1])
 	errfOnMismatch(err, nil, "%d is not a valid task ID\n")
 
-	task, ok := Tasks[taskID]
+	task, ok := tick.Tasks[taskID]
 	errfOnMismatch(ok, true, "Task ID '%d' does not exist\n")
 
 	task.Alias = newAlias
@@ -179,11 +179,11 @@ func defaultTaskCmd(cmd *cobra.Command, args []string) {
 }
 
 func setDefaultTask(taskID int) {
-	task, ok := Tasks[taskID]
+	task, ok := tick.Tasks[taskID]
 	errfOnMismatch(ok, true, "Task ID %d does not exist.\n", taskID)
 	projectsConfig.DefaultTask = task
 
-	for tID, task := range Tasks {
+	for tID, task := range tick.Tasks {
 		task.IsDefault = tID == taskID
 	}
 
