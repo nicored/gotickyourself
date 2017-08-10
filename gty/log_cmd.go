@@ -64,7 +64,7 @@ func runLogCmd(cmd *cobra.Command, args []string) {
 			logHours = hours
 			nArgs += 1
 			logType = logSpecificHours
-		} else if hours == 0 {
+		} else if isHours && hours == 0 {
 			log.Println("Error: Hours must be between 0 and 24")
 			os.Exit(1)
 		}
